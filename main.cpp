@@ -7,7 +7,6 @@
 #include <vector>
 #include <algorithm>
 #include <cctype>
-#include <regex>
 #include <set>
 #include <map>
 #include <sstream>
