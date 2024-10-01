@@ -272,14 +272,21 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     // Удалить однострочные комментарии из текстового представления графа
     remove_comments_in_string(temporary_dot_info);
 
-    // Удалить имя и ключевое слово графа из текстового представления графа
-    removing_part_of_string_up_to_specified_character(temporary_dot_info, '}');
+    // Дойти до следующего символа после фигурной скобки
+    begin_of_str = temporary_dot_info.find('}');
 
-    // Создать шаблон для проверки отсутствия символов (кроме пробельных) после закрывающей фигурной скобки
-    static const std::regex non_symbols_after_count_description(R"(\}\s*$)");
+    // Удалить лишнюю фигурную скобку
+    temporary_dot_info.erase(begin_of_str, 1);
 
-    // Проверить текстовое представление графа на соответствие шаблону
-    INVALID_SYMBOLS_AFTER_GRAPH_DESCRIPTION_flag = !(std::regex_search(temporary_dot_info, non_symbols_after_count_description));
+    // Проверяем пространство после описания графа
+    while (begin_of_str < temporary_dot_info.length() && std::isspace(temporary_dot_info[begin_of_str]))
+    {
+        temporary_dot_info.erase(begin_of_str, 1);
+    }
+    if (temporary_dot_info[begin_of_str] != '\0')
+    {
+        INVALID_SYMBOLS_AFTER_GRAPH_DESCRIPTION_flag = true;
+    }
 
     //Если обнаружено несоответствие
     if (INVALID_SYMBOLS_AFTER_GRAPH_DESCRIPTION_flag)
