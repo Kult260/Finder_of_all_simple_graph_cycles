@@ -120,6 +120,46 @@ bool validate_keyword(size_t &beginning_of_str, const std::string& input)
     return true;
 }
 
+bool validate_header(size_t &beginning_of_str, const std::string& input)
+{
+
+    //Шаг 1: Между строкой и ключевым словом должен быть пробельный символ
+    if (!std::isspace(input[beginning_of_str]))
+    {
+        return false;
+    }
+
+    // Шаг 2: Пропустить остальные пробелы
+    while (beginning_of_str < input.length() && std::isspace(input[beginning_of_str])) {
+        beginning_of_str++;
+    }
+
+    // Шаг 3: Проверяем, что первый символ — это буква или подчеркивание
+    if (!std::isalpha(input[beginning_of_str]) && input[beginning_of_str] != '_')
+    {
+        return false;
+    }
+
+    // Шаг 4: Проверяем, что все остальные символы — это буквы, цифры или подчеркивания. Прекращаем проверку при нахождении пробела или символа "{"
+    for (beginning_of_str++; beginning_of_str < input.length(); ++beginning_of_str)
+    {
+
+        if (std::isspace(input[beginning_of_str]) || input[beginning_of_str] == '{')
+        {
+            return true;
+        }
+
+        else if (!std::isalnum(input[beginning_of_str]) && input[beginning_of_str] != '_')
+        {
+            return false;
+        }
+
+    }
+
+    // Если все проверки пройдены, возвращаем true
+    return true;
+}
+
 void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& errors)
 {
     // Считать, что ошибки еще не найдены
@@ -151,11 +191,8 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     // Удалить однострочные комментарии из исходной строки
     remove_comments_in_string(temporary_dot_info);
 
-    // Создать шаблон для проверки корректности имени графа и пространства до него
-    static const std::regex correct_header(R"(^\s*digraph([ |\t|\v|\r|\f])+([A-Za-z_][\w]*))");
-
     // Если имя графа не соответствует шаблону
-    INVALID_HEADER_flag = !(std::regex_search(temporary_dot_info, correct_header));
+    INVALID_HEADER_flag = !(validate_header(begin_of_str, temporary_dot_info));
     if (INVALID_HEADER_flag)
     {
         //Добавить ошибку в список

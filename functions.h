@@ -81,4 +81,7 @@ bool write_text_to_file(const std::string& file_path, const std::string& string_
 // Функция, проверяющая корректность ключевого графа
 bool validate_keyword(size_t& beginning_of_str, const std::string& input);
 
+// Функция, проверяющая корректность имени графа
+bool validate_header(size_t& beginning_of_str, const std::string& input);
+
 #endif // FUNCTIONS_H
