@@ -160,6 +160,31 @@ bool validate_header(size_t &beginning_of_str, const std::string& input)
     return true;
 }
 
+bool space_beetween_heading_and_curly_bracket(size_t& beginning_of_str, const std::string& input)
+{
+    int count_n = 0;
+
+    // Шаг 1: Пропустить остальные пробелы
+    while (beginning_of_str < input.length() && std::isspace(input[beginning_of_str]))
+    {
+
+        if (input[beginning_of_str] == '\n')
+        {
+            count_n++;
+        }
+
+        beginning_of_str++;
+    }
+
+    // Шаг 2: Проверяем, что непробельным символом является '{' и есть символ переноса строки
+    if (input[beginning_of_str] == '{' && count_n >= 1)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& errors)
 {
     // Считать, что ошибки еще не найдены
@@ -227,15 +252,12 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 
     //---------------------------------------------INVALID_SPACE_BETWEEN_HEADING_AND_CURLY_BRACKET_flag
 
-    // Создать шаблон для проверки пространства между именем графа и открывающей фигурной скобкой
-    static const std::regex correct_space_between_heading_and_curly_bracket(R"(^\s*digraph\s+([A-Za-z_][\w]*)\s*\n+\s*[{]\s*\n+\s*)");
-
     temporary_dot_info = dot_info;
 
     remove_comments_in_string(temporary_dot_info);
 
     // Если проверяемое пространство не соответствует шаблону
-    INVALID_SPACE_BETWEEN_HEADING_AND_CURLY_BRACKET_flag = !(std::regex_search(temporary_dot_info, correct_space_between_heading_and_curly_bracket));
+    INVALID_SPACE_BETWEEN_HEADING_AND_CURLY_BRACKET_flag = !(space_beetween_heading_and_curly_bracket(begin_of_str, temporary_dot_info));
     if (INVALID_SPACE_BETWEEN_HEADING_AND_CURLY_BRACKET_flag)
     {
         // Добавить ошибку в список

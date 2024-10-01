@@ -84,4 +84,7 @@ bool validate_keyword(size_t& beginning_of_str, const std::string& input);
 // Функция, проверяющая корректность имени графа
 bool validate_header(size_t& beginning_of_str, const std::string& input);
 
+// Функция, проверяющая пространство между именем графа и фигурной скобкой
+bool space_beetween_heading_and_curly_bracket(size_t& beginning_of_str, const std::string& input);
+
 #endif // FUNCTIONS_H
