@@ -78,6 +78,7 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 // Функция для записи исходной строки в файл
 bool write_text_to_file(const std::string& file_path, const std::string& string_to_write, std::vector<Error>& errors);
 
-
+// Функция, проверяющая корректность ключевого графа
+bool validate_keyword(size_t& beginning_of_str, const std::string& input);
 
 #endif // FUNCTIONS_H

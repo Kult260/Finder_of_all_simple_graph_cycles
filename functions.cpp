@@ -82,6 +82,44 @@ std::string convert_error_to_str(const Error& error)
     return error_text;
 }
 
+bool validate_keyword(size_t &beginning_of_str, const std::string& input)
+{
+
+    // Шаг 1: Проверяем, что строка не пустая
+    if (input.empty())
+    {
+        return false;
+    }
+
+    // Шаг 2: Проверка индекса для прохода по строке
+    if(beginning_of_str > input.size() || beginning_of_str < size_t(0))
+    {
+        return false;
+    }
+
+    // Шаг 3: Пропустить пробелы в начале строки
+    while (beginning_of_str < input.length() && std::isspace(input[beginning_of_str]))
+    {
+        beginning_of_str++;
+    }
+
+    // Шаг 4: Проверить, что за пробелами идет слово "digraph"
+    const std::string keyword = "digraph";
+
+    for (size_t j = 0; j < keyword.length(); ++j)
+    {
+        // Если строка короче, чем "digraph", или символы не совпадают
+        if (beginning_of_str >= input.length() || input[beginning_of_str] != keyword[j])
+        {
+            return false;  // Несоответствие
+        }
+        beginning_of_str++;
+    }
+
+    // Если проверка прошла, строка валидна
+    return true;
+}
+
 void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& errors)
 {
     // Считать, что ошибки еще не найдены
@@ -92,15 +130,14 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 
     //---------------------------------------------INVAILD_KEYWORD
     std::string temporary_dot_info = dot_info;
+    size_t begin_of_str = 0;
 
     // Удалить однострочные комментарии из исходной строки
     remove_comments_in_string(temporary_dot_info);
 
-    // Создать шаблон для проверки корректности ключевого слова и пространства до него
-    static const std::regex correct_keyword(R"rgx(^\s*digraph)rgx");
-
     // Если текстовое представление графа не соответствует шаблону
-    INVALID_KEYWORD_flag = !(std::regex_search(temporary_dot_info, correct_keyword));
+    INVALID_KEYWORD_flag = !(validate_keyword(begin_of_str, temporary_dot_info));
+
     if (INVALID_KEYWORD_flag)
     {
         // Добавить ошибку в список
