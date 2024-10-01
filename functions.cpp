@@ -367,7 +367,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     remove_all_occurrences_of_character_in_string(temporary_dot_info, characters_to_delete);
 
     std::stringstream temporary_dot_info_stream(temporary_dot_info);
-    current_substr_of_temporary_dot_info;
 
     //Считать, что нумерация строк будет начинаться с 1
     number_of_current_str = 1;
@@ -466,7 +465,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     temporary_dot_info = temporary_dot_info.substr(0, temporary_dot_info.find("}", 0));
 
     std::stringstream temporary_dot_info_stream_2(temporary_dot_info);
-    current_substr_of_temporary_dot_info;
 
     // Считать, что нумерация строк будет начинаться с 1
     number_of_current_str = 1;
