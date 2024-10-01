@@ -898,14 +898,36 @@ void remove_all_occurrences_of_character_in_string(std::string& input_string, st
 // Функция для удаления однострочных комментариев в строке
 void remove_comments_in_string(std::string& input_string)
 {
-    // Создать шаблон для поиска комментария
-    std::regex commentRegex("//.*");
+    bool is_comment = false;
+    size_t write_pos = 0;  // Позиция для записи символов без комментариев
 
-    // Заменить все подстроки, соответствующие шаблону комментария, на пустые подстроки
-    std::string result = std::regex_replace(input_string, commentRegex, "");
+    for (size_t i = 0; i < input_string.size(); ++i)
+    {
+        // Проверка начала однострочного комментария
+        if (i < input_string.size() - 1 && input_string[i] == '/' && input_string[i + 1] == '/')
+        {
+            is_comment = true; // Обнаружен комментарий
+            ++i; // Пропускаем символы "//"
+            continue;
+        }
 
-    // Обновить исходную строку
-    input_string = result;
+        // Пропустить все символы до конца строки, если внутри комментария
+        if (is_comment)
+        {
+            if (input_string[i] == '\n')
+            {
+                is_comment = false; // Конец однострочного комментария
+                input_string[write_pos++] = input_string[i]; // Сохраняем символ новой строки
+            }
+        }
+        else
+        {
+            input_string[write_pos++] = input_string[i]; // Копируем символ, если не комментарий
+        }
+    }
+
+    // Обрезаем строку до нового размера, исключая удаленные комментарии
+    input_string.resize(write_pos);
 }
 
 // Функция для удаления части строки, находящейся до первого найденного вхождения указанного символа
