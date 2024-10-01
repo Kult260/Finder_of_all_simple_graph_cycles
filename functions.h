@@ -18,7 +18,7 @@
 void remove_delimiters_in_string(std::string& input_string, char delimiter_being_exception);
 
 // Функция для составления списка связей, которые повторяются в нескольких циклах
-std::set< std::pair<int, int> > find_repeated_arc_in_cycles(const std::vector< std::list<int> >& list_with_simple_cycles);
+void find_repeated_arc_in_cycles(const std::vector< std::list<int> >& list_with_simple_cycles, std::set< std::pair<int, int> >& repeated_edges);
 
 // Функция для удаления всех символов пропусков, кроме символа переноса строки, не затрагивая однострочные комментарии
 void remove_whitespace_except_new_line(std::string& graph_in_Dot);

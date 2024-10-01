@@ -522,10 +522,10 @@ bool write_text_to_file(const std::string& file_path, const std::string& text_to
 }
 
 // Функция для составления списка связей, которые повторяются в нескольких циклах
-std::set< std::pair<int, int> > find_repeated_arc_in_cycles(const std::vector< std::list<int> >& list_with_simple_cycles)
+void find_repeated_arc_in_cycles(const std::vector< std::list<int> >& list_with_simple_cycles, std::set< std::pair<int, int> >& repeated_edges)
 {
     std::map<std::pair<int, int>, int> edge_count; // список с парами и количеством их в различных циклах
-    std::set< std::pair<int, int> > repeated_edges; // множество многократно повторяющихся пар
+    std::pair<int, int> edge;
 
     // Для каждого цикла из списка
     for (const auto& current_cycle : list_with_simple_cycles)
@@ -540,7 +540,7 @@ std::set< std::pair<int, int> > find_repeated_arc_in_cycles(const std::vector< s
         // Пока не достигнут конец цикла
         while (second_element != current_cycle.end())
         {
-            std::pair<int, int> edge = { *first_element, *second_element }; // пара для текущей связи
+            edge = { *first_element, *second_element }; // пара для текущей связи
 
             // Считать, что пара один раз встретилась в этом цикле и увеличить счетчик для этой пары
             ++edge_count[edge];
@@ -561,9 +561,8 @@ std::set< std::pair<int, int> > find_repeated_arc_in_cycles(const std::vector< s
             repeated_edges.insert(current_pair.first);
         }
     }
-
-    return repeated_edges;
 }
+
 
 
 // Функция для удаления всех символов пропусков, кроме символа переноса строки, не затрагивая однострочные комментарии в описании графа
@@ -627,7 +626,8 @@ void perform_coloring_for_vertices_from_the_corresponding_cycles_in_graph(std::s
     remove_whitespace_except_new_line(graph_in_Dot);
 
     // Составить список связей, которые принадлежат нескольким простым циклам одновременно
-    std::set< std::pair<int, int> > repeated_arc = find_repeated_arc_in_cycles(list_with_simple_cycles);
+    std::set< std::pair<int, int> > repeated_arc;
+    find_repeated_arc_in_cycles(list_with_simple_cycles, repeated_arc);
 
     // Для каждой связи (дуги) из списка с повторяющимися связями
     for (const auto& current_arc : repeated_arc)

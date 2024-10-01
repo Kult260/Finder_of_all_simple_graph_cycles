@@ -1354,7 +1354,8 @@ void TESTS::test_find_repeated_arc_in_cycles()
         {4, 5, 6, 4}
     };
 
-    std::set< std::pair<int, int> >  inp_list_with_simple_cycles = find_repeated_arc_in_cycles(list_with_simple_cycles);
+    std::set< std::pair<int, int> >  inp_list_with_simple_cycles;
+    find_repeated_arc_in_cycles(list_with_simple_cycles, inp_list_with_simple_cycles);
 
     std::set<std::pair<int, int>> expected_result = {};
 
@@ -1363,7 +1364,7 @@ void TESTS::test_find_repeated_arc_in_cycles()
     //--------------------------------В списке циклов одна повторяющаяся связь----------------------------------
     list_with_simple_cycles = { {1, 2, 3, 1}, {2, 3, 4, 2} };
 
-    inp_list_with_simple_cycles = find_repeated_arc_in_cycles(list_with_simple_cycles);
+    find_repeated_arc_in_cycles(list_with_simple_cycles, inp_list_with_simple_cycles);
 
     expected_result = {{2, 3}};
 
@@ -1372,7 +1373,7 @@ void TESTS::test_find_repeated_arc_in_cycles()
     //--------------------------------В списке циклов много повторяющихся связей----------------------------------
     list_with_simple_cycles =  { {1, 2, 3, 1}, {2, 3, 1, 2} };
 
-    inp_list_with_simple_cycles = find_repeated_arc_in_cycles(list_with_simple_cycles);
+    find_repeated_arc_in_cycles(list_with_simple_cycles, inp_list_with_simple_cycles);
 
     expected_result = {{2, 3}, {3, 1}, {1, 2}};
 
