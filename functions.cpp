@@ -194,14 +194,13 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 
     //---------------------------------------------INVAILD_KEYWORD
     std::string temporary_dot_info = dot_info;
-    size_t begin_of_str = 0;
 
     // Удалить однострочные комментарии из исходной строки
     remove_comments_in_string(temporary_dot_info);
 
-    // Если текстовое представление графа не соответствует шаблону
+    // Если текстовое представление графа не корректно
+    size_t begin_of_str = 0;// Индекс начала строки
     INVALID_KEYWORD_flag = !(validate_keyword(begin_of_str, temporary_dot_info));
-
     if (INVALID_KEYWORD_flag)
     {
         // Добавить ошибку в список
@@ -210,12 +209,7 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     }
 
     //---------------------------------------------INVAILD_HEADER
-    temporary_dot_info = dot_info;
-
-    // Удалить однострочные комментарии из исходной строки
-    remove_comments_in_string(temporary_dot_info);
-
-    // Если имя графа не соответствует шаблону
+    // Если имя графа не корректно
     INVALID_HEADER_flag = !(validate_header(begin_of_str, temporary_dot_info));
     if (INVALID_HEADER_flag)
     {
@@ -226,10 +220,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 
 
     //---------------------------------------------INVALID_CURLY_BRACES
-    temporary_dot_info = dot_info;
-
-    // Удалить однострочные комментарии из исходной строки
-    remove_comments_in_string(temporary_dot_info);
 
     int opening_brace = 0;
     int closing_brace = 0;
@@ -251,10 +241,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 
     //---------------------------------------------INVALID_SPACE_BETWEEN_HEADING_AND_CURLY_BRACKET_flag
 
-    temporary_dot_info = dot_info;
-
-    remove_comments_in_string(temporary_dot_info);
-
     // Если проверяемое пространство не соответствует шаблону
     INVALID_SPACE_BETWEEN_HEADING_AND_CURLY_BRACKET_flag = !(space_beetween_heading_and_curly_bracket(begin_of_str, temporary_dot_info));
     if (INVALID_SPACE_BETWEEN_HEADING_AND_CURLY_BRACKET_flag)
@@ -266,10 +252,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 
 
     //---------------------------------------------INVALID_SYMBOLS_AFTER_GRAPH_DESCRIPTION
-    temporary_dot_info = dot_info;
-
-    // Удалить однострочные комментарии из текстового представления графа
-    remove_comments_in_string(temporary_dot_info);
 
     // Дойти до следующего символа после фигурной скобки
     begin_of_str = temporary_dot_info.find('}');
@@ -297,17 +279,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
 
 
     //---------------------------------------------INVALID_VERTICE_NAME_OR_SYMBOLS
-    temporary_dot_info = dot_info;
-
-    // Удалить однострочные комментарии из текстового представления графа
-    remove_comments_in_string(temporary_dot_info);
-
-    // Удалить закрывающую фигурную скобку и текст до нее из текстового представления графа
-    temporary_dot_info = temporary_dot_info.substr(0, temporary_dot_info.find("}", 0));
-
-    // Удалить все точки с запятой из текстового представления графа
-    std::string characters_to_delete = ";";
-    remove_all_occurrences_of_character_in_string(temporary_dot_info, characters_to_delete);
 
     std::stringstream temporary_dot_info_stream_1(temporary_dot_info);
     std::string current_substr_of_temporary_dot_info;
@@ -335,7 +306,7 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
         for (auto current_char : current_substr_of_temporary_dot_info)
         {
             // Если текущий символ не является допустимым в строке со связями
-            if (!isspace(current_char) && !isdigit(current_char) && current_char != '-' && current_char != '>' && INVALID_VERTICE_NAME_OR_SYMBOLS_flag == false)
+            if (!isspace(current_char) && !isdigit(current_char) && current_char != '-' && current_char != '>' && current_char != ';' && INVALID_VERTICE_NAME_OR_SYMBOLS_flag == false)
             {
                 // Считать, что ошибка найдена
                 INVALID_VERTICE_NAME_OR_SYMBOLS_flag = true;
@@ -353,17 +324,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     }
 
     //---------------------------------------------INVALID_COMMUNICATION_BETWEEN_VERTICES, INVALID_CONNECTION_SIGN
-    temporary_dot_info = dot_info;
-
-    // Удалить однострочные комментарии из текстового представления графа
-    remove_comments_in_string(temporary_dot_info);
-
-    // Удалить закрывающую фигурную скобку и текст до нее из текстового представления графа
-    temporary_dot_info = temporary_dot_info.substr(0, temporary_dot_info.find("}", 0));
-
-    // Удалить все точки с запятой из текстового представления графа
-    characters_to_delete = ";";
-    remove_all_occurrences_of_character_in_string(temporary_dot_info, characters_to_delete);
 
     std::stringstream temporary_dot_info_stream(temporary_dot_info);
 
@@ -375,14 +335,13 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     {
         // Считать строки
         number_of_current_str++;
-
-
     }
 
     //Переменные для подсчета не пробельных символов строки
     int count_num;
     int count_arr;
     int count_dash;
+    int count_space;
     bool inNumber;
 
     // Пока в текстовом описании графа есть строки
@@ -395,6 +354,7 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
         count_num = 0;
         count_arr = 0;
         count_dash = 0;
+        count_space = 0;
         inNumber = false;
         for (char current_char : current_substr_of_temporary_dot_info) {
             if (isdigit(current_char)) {
@@ -415,17 +375,22 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
             {
                 count_arr++;
             }
+
+            if(std::isspace(current_char))
+            {
+                count_space++;
+            }
         }
 
         if(count_num > 2)
         {
-                INVALID_COMMUNICATION_BETWEEN_VERTICES_flag = true;
+            INVALID_COMMUNICATION_BETWEEN_VERTICES_flag = true;
 
         }
 
         else if((count_dash > 1 || count_arr > 1) && ((count_dash + count_arr) % 2 == 0 ))
         {
-                INVALID_COMMUNICATION_BETWEEN_VERTICES_flag = true;
+            INVALID_COMMUNICATION_BETWEEN_VERTICES_flag = true;
 
         }
 
@@ -435,6 +400,11 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
             INVALID_CONNECTION_SIGN_flag = true;
         }
 
+        if(count_space != 0 && count_arr == 0 && count_dash == 0 && count_num == 0)
+        {
+            INVALID_COMMUNICATION_BETWEEN_VERTICES_flag = false;
+            INVALID_CONNECTION_SIGN_flag = false;
+        }
 
         // Если текущая строка содержит ошибку
         if(INVALID_COMMUNICATION_BETWEEN_VERTICES_flag)
@@ -455,13 +425,6 @@ void validate_dot_graph_info(const std::string& dot_info, std::vector<Error>& er
     }
 
     //---------------------------------------------SEMOLON_IS_MISSING
-    temporary_dot_info = dot_info;
-
-    // Удалить однострочные комментарии из текстового представления графа
-    remove_comments_in_string(temporary_dot_info);
-
-    // Удалить закрывающую фигурную скобку и текст до нее из текстового представления графа
-    temporary_dot_info = temporary_dot_info.substr(0, temporary_dot_info.find("}", 0));
 
     std::stringstream temporary_dot_info_stream_2(temporary_dot_info);
 
