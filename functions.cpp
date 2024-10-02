@@ -14,6 +14,8 @@
 #include <QTextCodec>
 #include <QString>
 #include <QDebug>
+#include <unordered_map>
+
 
 // Функция для удаления всех разделителей в строке, кроме указанного пользователем в качестве исключения
 void remove_delimiters_in_string(std::string& input_string, char delimiter_being_exception)
@@ -521,44 +523,45 @@ bool write_text_to_file(const std::string& file_path, const std::string& text_to
     return true;
 }
 
-// Функция для составления списка связей, которые повторяются в нескольких циклах
-void find_repeated_arc_in_cycles(const std::vector< std::list<int> >& list_with_simple_cycles, std::set< std::pair<int, int> >& repeated_edges)
-{
-    std::map<std::pair<int, int>, int> edge_count; // список с парами и количеством их в различных циклах
-    std::pair<int, int> edge;
+// Хэш-функция для std::pair<int, int>
+struct pair_hash {
+    template <typename T1, typename T2>
+    std::size_t operator()(const std::pair<T1, T2>& p) const {
+        // Простое хэширование, которое комбинирует хэши двух элементов пары
+        return std::hash<T1>{}(p.first) ^ (std::hash<T2>{}(p.second) << 1);
+    }
+};
 
-    // Для каждого цикла из списка
+// Функция для составления списка связей, которые повторяются в нескольких циклах
+void find_repeated_arc_in_cycles(const std::vector<std::list<int>>& list_with_simple_cycles, std::set<std::pair<int, int>>& repeated_edges)
+{
+    // Используем unordered_map с пользовательским хэшером для подсчета рёбер
+    std::unordered_map<std::pair<int, int>, int, pair_hash> edge_count;
+
+    // Для каждого цикла
     for (const auto& current_cycle : list_with_simple_cycles)
     {
-        // Сохранить первый элемент цикла
-        auto second_element = current_cycle.begin();
-        auto first_element = second_element;
+        if (current_cycle.size() < 2) continue; // Пропустить циклы с менее чем двумя вершинами
 
-        // Перейти к следующему элементу цикла
-        ++second_element;
+        auto first_element = current_cycle.begin();
+        auto second_element = std::next(first_element);
 
-        // Пока не достигнут конец цикла
+        // Проход по элементам цикла парами
         while (second_element != current_cycle.end())
         {
-            edge = { *first_element, *second_element }; // пара для текущей связи
-
-            // Считать, что пара один раз встретилась в этом цикле и увеличить счетчик для этой пары
-            ++edge_count[edge];
-
-            // Перейти к следующей паре
-            first_element = second_element;
+            // Обновляем счётчик для каждой пары рёбер
+            ++edge_count[{*first_element, *second_element}];
+            ++first_element;
             ++second_element;
         }
     }
 
-    // Для каждой пары связей из словаря с парами связей и их количеством в различных циклах
-    for (const auto& current_pair : edge_count)
+    // Добавляем повторяющиеся рёбра в множество
+    for (const auto& [edge, count] : edge_count)
     {
-        // Если связь встречается более одного раза в различных циклах
-        if (current_pair.second > 1)
+        if (count > 1)
         {
-            // Добавить связь в множество повторяющихся связей
-            repeated_edges.insert(current_pair.first);
+            repeated_edges.insert(edge);
         }
     }
 }

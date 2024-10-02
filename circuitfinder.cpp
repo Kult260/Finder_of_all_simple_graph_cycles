@@ -1,8 +1,5 @@
 #include "circuitfinder.h"
-#include <algorithm>
-#include <iostream>
-#include <list>
-#include <vector>
+
 
 void CircuitFinder::unblock(int vertex_to_unlock)
 {

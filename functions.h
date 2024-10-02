@@ -12,7 +12,8 @@
 #include <sstream>
 #include <utility>
 #include <list>
-
+#include <unordered_map>
+#include <functional>
 
 // Функция для удаления всех разделителей в строке, кроме указанного пользователем в качестве исключения
 void remove_delimiters_in_string(std::string& input_string, char delimiter_being_exception);
